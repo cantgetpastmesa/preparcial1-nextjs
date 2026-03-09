@@ -3,6 +3,7 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image"
 import { FaSave, FaTimes, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 
 const API_URL = "http://127.0.0.1:8080/api/authors";
@@ -31,7 +32,6 @@ export default function CreateAuthorPage() {
     image: false,
   });
   
-  const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
@@ -117,6 +117,20 @@ export default function CreateAuthorPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  /* Verifica si el formulario es válido para habilitar el botón */
+  const isFormValid = (): boolean => {
+    // Todos los campos requeridos deben tener valor
+    const hasRequiredFields = 
+      formData.name.trim() !== "" &&
+      formData.birthDate !== "" &&
+      formData.description.trim() !== "";
+    
+    // No debe haber errores de validación
+    const hasNoErrors = Object.values(errors).every(error => !error);
+    
+    return hasRequiredFields && hasNoErrors;
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -126,7 +140,6 @@ export default function CreateAuthorPage() {
     }
 
     try {
-      setSubmitting(true);
       setSubmitError(null);
       
       const response = await fetch(API_URL, {
@@ -150,8 +163,6 @@ export default function CreateAuthorPage() {
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Error desconocido al crear autor");
       console.error("Error creating author:", err);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -189,7 +200,7 @@ export default function CreateAuthorPage() {
             aria-live="assertive"
             className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-start gap-3"
           >
-            <FaExclamationCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+            <FaExclamationCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold text-red-800 dark:text-red-300">Error</h3>
               <p className="text-red-700 dark:text-red-400">{submitError}</p>
@@ -345,10 +356,12 @@ export default function CreateAuthorPage() {
               )}
               {formData.image && !errors.image && (
                 <div className="mt-2">
-                  <img
+                  <Image
                     src={formData.image}
                     alt="Vista previa"
-                    className="w-32 h-32 object-cover rounded-lg"
+                    width={300}
+                    height={300}
+                    className="object-cover rounded-lg"
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                     }}
@@ -361,20 +374,11 @@ export default function CreateAuthorPage() {
           <div className="mt-8 flex gap-4">
             <button
               type="submit"
-              disabled={submitting}
-              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-lg transition-colors font-medium shadow-md"
+              disabled={!isFormValid()}
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg transition-colors font-medium shadow-md"
             >
-              {submitting ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Guardando...
-                </>
-              ) : (
-                <>
-                  <FaSave className="w-4 h-4" />
-                  Crear Autor
-                </>
-              )}
+              <FaSave className="w-4 h-4" />
+              Crear Autor
             </button>
             
             <Link

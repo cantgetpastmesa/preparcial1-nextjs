@@ -1,16 +1,16 @@
 import Link from "next/link";
-import { FaUsers, FaUserPlus, FaBook } from "react-icons/fa";
+import { FaUsers, FaUserPlus} from "react-icons/fa";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       <main className="w-full max-w-4xl px-6 py-12">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Preparcial 1 Next.js - ISIS 3710
+            Parcial 1 Next.js - ISIS 3710
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            Página CRUD para el bookstore-back
+            Frontend (y sus pruebas) para el CRUD para el bookstore-back
           </p>
         </div>
 
@@ -27,7 +27,7 @@ export default function Home() {
                 Ver Autores
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                Explora y gestiona la lista completa de autores
+                Mira, edita, añade o elimina autores
               </p>
             </div>
           </Link>
@@ -49,7 +49,11 @@ export default function Home() {
             </div>
           </Link>
         </div>
-
+        <div className="mt-12 pt-8 text-center">
+          <p className=" text-gray-600 dark:text-gray-400">
+            Desarrollado por Felipe A. Mesa N. - 202123007
+          </p>
+        </div>
       </main>
     </div>
   );

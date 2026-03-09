@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, FormEvent, ChangeEvent } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { FaSave, FaTimes, FaCheckCircle, FaExclamationCircle, FaSpinner } from "react-icons/fa";
+import Image from "next/image"
+import { FaSave, FaTimes, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 
 const API_URL = "http://127.0.0.1:8080/api/authors";
 
@@ -34,15 +35,12 @@ export default function EditAuthorPage() {
     image: false,
   });
   
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const fetchAuthor = useCallback(async () => {
     try {
-      setLoading(true);
       setLoadError(null);
       
       const response = await fetch(`${API_URL}/${id}`);
@@ -65,8 +63,6 @@ export default function EditAuthorPage() {
     } catch (err) {
       setLoadError(err instanceof Error ? err.message : "Error desconocido al cargar autor");
       console.error("Error fetching author:", err);
-    } finally {
-      setLoading(false);
     }
   }, [id]);
 
@@ -164,7 +160,6 @@ export default function EditAuthorPage() {
     }
 
     try {
-      setSubmitting(true);
       setSubmitError(null);
       
       const response = await fetch(`${API_URL}/${id}`, {
@@ -187,21 +182,8 @@ export default function EditAuthorPage() {
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Error desconocido al actualizar autor");
       console.error("Error updating author:", err);
-    } finally {
-      setSubmitting(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <FaSpinner className="animate-spin w-12 h-12 text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Cargando datos del autor...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (loadError) {
     return (
@@ -265,7 +247,7 @@ export default function EditAuthorPage() {
             aria-live="assertive"
             className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-start gap-3"
           >
-            <FaExclamationCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+            <FaExclamationCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold text-red-800 dark:text-red-300">Error</h3>
               <p className="text-red-700 dark:text-red-400">{submitError}</p>
@@ -421,10 +403,12 @@ export default function EditAuthorPage() {
               )}
               {formData.image && !errors.image && (
                 <div className="mt-2">
-                  <img
+                  <Image
                     src={formData.image}
                     alt="Vista previa"
-                    className="w-32 h-32 object-cover rounded-lg"
+                    width={300}
+                    height={300}
+                    className="object-cover rounded-lg"
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                     }}
@@ -437,20 +421,10 @@ export default function EditAuthorPage() {
           <div className="mt-8 flex gap-4">
             <button
               type="submit"
-              disabled={submitting}
-              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-lg transition-colors font-medium shadow-md"
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium shadow-md"
             >
-              {submitting ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Guardando...
-                </>
-              ) : (
-                <>
-                  <FaSave className="w-4 h-4" />
-                  Guardar Cambios
-                </>
-              )}
+              <FaSave className="w-4 h-4" />
+              Guardar Cambios
             </button>
             
             <Link
